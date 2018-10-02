@@ -1,0 +1,23 @@
+{
+  "name": "simple-sign",
+  "version": "0.0.0",
+  "main": "sign.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "git://github.com/tcgarvin/simple-sign.git",
+  "keywords": [
+    "Tessel"
+  ],
+  "dependencies": {
+    "johnny-five": "^1.0.0",
+    "tessel-io": "^1.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.6.1",
+    "eslint-config-google": "^0.10.0"
+  },
+  "engines": {
+    "node": "~8.1"
+  }
+}
