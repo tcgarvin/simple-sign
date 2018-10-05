@@ -1,3 +1,4 @@
 {
-  "use-dummy-api": true
+  "use-dummy-api": true,
+  "GCLOUD_PROJECT": "tcgarvin-com"
 }

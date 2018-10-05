@@ -44,8 +44,6 @@ class Sign {
 
   setDoNotDisturb(message) {
     this.writeTopLine(message);
-
-    this.doNotDisturbListener = setInterval(() => this.writeTopLine(message), 1000);
   }
 
   writeTopLine(message) {

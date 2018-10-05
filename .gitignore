@@ -62,3 +62,6 @@ typings/
 
 # Application Settings
 settings.json
+
+# GCP Credentials
+gcp_cred.json

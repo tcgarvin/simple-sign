@@ -9,6 +9,10 @@ class DummyLEDs {
     console.log("Network LED Inactive");
   }
 
+  pulseData() {
+    console.log("Data LED Pulsed");
+  }
+
   unhandledError() {
     console.log("Error LED Active");
   }
@@ -25,6 +29,11 @@ class LEDs {
 
   networkInactive() {
     this.tessel.led[1].off();
+  }
+
+  pulseData() {
+    this.tessel.led[3].on();
+    setTimeout(() => this.tessel.led[3].off(), 1000);
   }
 
   unhandledError() {

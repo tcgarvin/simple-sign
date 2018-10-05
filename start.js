@@ -1,11 +1,18 @@
 'use strict';
 
+// "Pre-import", trying to get environment variables setup before anything else
+let settings = require('./settings.json');
+let path = require('path');
+
+process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(__dirname, "gcp_cred.json");
+process.env.GCLOUD_PROJECT = "tcgarvin-com";
+
+// "Regular import"
 let { DummyAPI, TCGarvinAPI } = require('./io/tcgarvin-api');
 let { DummyLEDs, LEDs } = require('./io/leds');
 let { DummySign, Sign } = require('./io/sign');
 let { Board } = require("johnny-five");
 let Controller = require('./controller');
-let settings = require('./settings.json');
 
 let tessel = null;
 let TesselIO = null;

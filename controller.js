@@ -5,31 +5,17 @@ class Controller {
     this.tcgarvinAPI = tcgarvinAPI;
     this.sign = sign;
     this.leds = leds;
-
-    this.infoPending = false;
   }
 
   run() {
-    this.refreshInfo();
-  }
-
-  refreshInfo() {
-    if (this.infoPending) {
-      return;
-    }
-
-    this.leds.networkActive();
-    this.tcgarvinAPI.getCurrentStatus().
-      then((info) => {
-        this.leds.networkInactive();
-
-        return info;
-      }).
-      then(this.handleNewInfo.bind(this)).
-      catch((error) => this.handleError("Error refreshing info", error));
+    this.tcgarvinAPI.on("error", (error) => this.handleError("Error from tcgarvin API", error));
+    this.tcgarvinAPI.on("update", (info) => this.handleNewInfo(info));
+    this.tcgarvinAPI.startPollLoop();
   }
 
   handleNewInfo(info) {
+    console.log(`Received new info: ${JSON.stringify(info)}`);
+    this.leds.pulseData();
     if (info.doNotDisturb) {
       this.sign.setDoNotDisturb(info.message);
     }
