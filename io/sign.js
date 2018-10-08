@@ -4,9 +4,9 @@ let { LCD, Led } = require("johnny-five");
 
 const signWidth = 16;
 
-function trimmedAndRightPadded(message) {
-  let trimmed = message.slice(0, signWidth);
-  let remaining = signWidth - trimmed.length;
+function trimmedAndRightPadded(message, width) {
+  let trimmed = message.slice(0, width);
+  let remaining = width - trimmed.length;
   let pad = " ".repeat(remaining);
 
   return trimmed + pad;
@@ -18,11 +18,17 @@ class DummySign {
   }
 
   setDoNotDisturb(message) {
-    console.log(this.displaySegment(message));
+    let paddedMessage = trimmedAndRightPadded(message, signWidth * 2);
+
+    let topLine = paddedMessage.slice(0,16);
+    let bottomLine = paddedMessage.slice(16,32);
+
+    console.log(this.displaySegment(topLine));
+    console.log(this.displaySegment(bottomLine));
   }
 
   displaySegment(message) {
-    return "|" + trimmedAndRightPadded(message) + "|";
+    return "|" + trimmedAndRightPadded(message, signWidth) + "|";
   }
 }
 
@@ -43,12 +49,30 @@ class Sign {
   }
 
   setDoNotDisturb(message) {
-    this.writeTopLine(message);
+    this.lcdBacklight.on();
+    this.writeWithWrap(message);
+  }
+
+  writeWithWrap(message) {
+    let paddedMessage = trimmedAndRightPadded(message, signWidth * 2);
+
+    let topLine = paddedMessage.slice(0,16);
+    let bottomLine = paddedMessage.slice(16,32);
+
+    this.writeTopLine(topLine);
+    this.writeBottomLine(bottomLine);
+  }
+
+  writeLine(message, lineNumber) {
+    this.lcd.cursor(lineNumber, 0).print(trimmedAndRightPadded(message, signWidth));
   }
 
   writeTopLine(message) {
-    this.lcdBacklight.on();
-    this.lcd.cursor(0,0).print(trimmedAndRightPadded(message));
+    this.writeLine(message, 0);
+  }
+
+  writeBottomLine(message) {
+    this.writeLine(message, 1);
   }
 }
 

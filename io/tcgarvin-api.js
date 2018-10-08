@@ -29,7 +29,7 @@ class TCGarvinAPI extends EventEmitter {
       requestBody: {
         // TODO: Think through multiple messages
         maxMessages: 1,
-        returnImmediately: true
+        returnImmediately: false
       }
     }).
     then((response) => {
@@ -41,6 +41,7 @@ class TCGarvinAPI extends EventEmitter {
       }
 
       let receivedMessage = response.data.receivedMessages[0];
+
       return this.acknowledgeMessage(receivedMessage);
     }).
     then((receivedMessage) => {
@@ -64,7 +65,7 @@ class TCGarvinAPI extends EventEmitter {
     return this.pubsub.projects.subscriptions.acknowledge({
       subscription: "projects/tcgarvin-com/subscriptions/officeDoor",
       requestBody: {
-        ackIds: [ message.ackId ]
+        ackIds: [message.ackId]
       }
     }).
     then(() => message);
