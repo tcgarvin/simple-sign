@@ -1,6 +1,7 @@
 'use strict';
 
 let EventEmitter = require('events');
+let Message = require('../message');
 let { google } = require('googleapis');
 
 let dummyMessages = ["In a call", "Beating deadline", "Free at 4:30"];
@@ -24,6 +25,7 @@ class DummyAPI extends EventEmitter {
 
 class TCGarvinAPI extends EventEmitter {
   checkForUpdate() {
+    this.emit("networkActive", true);
     let update = this.pubsub.projects.subscriptions.pull({
       subscription: "projects/tcgarvin-com/subscriptions/officeDoor",
       requestBody: {
@@ -33,7 +35,7 @@ class TCGarvinAPI extends EventEmitter {
       }
     }).
     then((response) => {
-
+      this.emit("networkActive", false);
       if (!response.data.receivedMessages || response.data.receivedMessages.length === 0) {
         // If no messages, throw an ugly string to skip the next part.  It's
         // getting late, and I don't want to think about this anymore.
@@ -48,7 +50,14 @@ class TCGarvinAPI extends EventEmitter {
       let receivedData = base64ToJson(receivedMessage.message.data);
 
       console.log(JSON.stringify(receivedData));
-      this.emit("update", receivedData);
+
+      let message = new Message(
+        receivedData.message,
+        receivedData.msToLive,
+        receivedData.doNotDisturb
+      );
+
+      this.emit("update", message);
     }).
     catch((rejection) => {
       // See non-apology above.
@@ -62,28 +71,35 @@ class TCGarvinAPI extends EventEmitter {
   }
 
   acknowledgeMessage(message) {
+    this.emit("networkActive", true);
+
     return this.pubsub.projects.subscriptions.acknowledge({
       subscription: "projects/tcgarvin-com/subscriptions/officeDoor",
       requestBody: {
         ackIds: [message.ackId]
       }
     }).
-    then(() => message);
+    then(() => {
+      this.emit("networkActive", false);
+
+      return message;
+    });
   }
 
   doPollLoop() {
     this.checkForUpdate().
-    catch((rejection) => {
-      this.emit("error", rejection);
-    }).
     then(
       // Duplication here is because "finally" isn't supported in node 8;
       () => setTimeout(() => this.doPollLoop(), 2000),
-      () => setTimeout(() => this.doPollLoop(), 2000)
+      (rejection) => {
+        this.emit("error", rejection);
+        setTimeout(() => this.doPollLoop(), 30000);
+      }
     );
   }
 
   startPollLoop() {
+    this.emit("networkActive", true);
     google.auth.getClient({
       scopes: ['https://www.googleapis.com/auth/pubsub']
     }).

@@ -45,6 +45,7 @@ class Sign {
   }
 
   off() {
+    this.lcd.clear();
     this.lcdBacklight.off();
   }
 

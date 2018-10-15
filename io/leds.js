@@ -16,6 +16,10 @@ class DummyLEDs {
   unhandledError() {
     console.log("Error LED Active");
   }
+
+  stopErrorLed() {
+    console.log("Error LED Inactive");
+  }
 }
 
 class LEDs {
@@ -33,7 +37,7 @@ class LEDs {
 
   pulseData() {
     this.tessel.led[3].on();
-    setTimeout(() => this.tessel.led[3].off(), 1000);
+    setTimeout(() => this.tessel.led[3].off(), 2000);
   }
 
   unhandledError() {
@@ -43,6 +47,14 @@ class LEDs {
 
     this.tessel.led[0].on();
     this.errorInterval = setInterval(() => this.tessel.led[0].toggle(), 500);
+  }
+
+  stopErrorLed() {
+    if (this.errorInterval) {
+      clearInterval(this.errorInterval);
+    }
+
+    this.tessel.led[0].off();
   }
 }
 
