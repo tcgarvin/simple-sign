@@ -10,10 +10,16 @@ function jsonToBase64(json) {
   return binary.toString('base64');
 }
 
+if (process.argv.length < 4) {
+  console.log('Usage: node cli.js "MY MESSAGE" TTL_MS');
+  console.log('Example: node cli.js "Hello World" 60000');
+  process.exit(-1);
+}
+
 let messageData = jsonToBase64({
   doNotDisturb: true,
   message: process.argv[2],
-  msToLive: 100000
+  msToLive: parseInt(process.argv[3])
 });
 
 google.auth.getClient({
